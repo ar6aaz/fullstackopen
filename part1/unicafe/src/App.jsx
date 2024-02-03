@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 
-const StatisticsContainer = ({good, neutral, bad}) => {
+const Statistics = ({good, neutral, bad}) => {
     if( good+bad+neutral === 0){
       return (
         <p>No feedback given</p>
@@ -10,20 +10,27 @@ const StatisticsContainer = ({good, neutral, bad}) => {
     else {
       return (
         <>
-          <Statistics name="good" num={good} />
-          <Statistics name="neutral" num={neutral}/>
-          <Statistics name="bad" num={bad} />
-          <Statistics name="total" num={good + bad + neutral} />
-          <Statistics name="average" num={(good-bad)/(good+bad+neutral)}/>
-          <Statistics name="positive" num={(good)/(bad+good+neutral)*100}/>
+        <table>
+          <tbody>
+            <StatisticLine name="good" num={good} />
+            <StatisticLine name="neutral" num={neutral}/>
+            <StatisticLine name="bad" num={bad} />
+            <StatisticLine name="total" num={good + bad + neutral} />
+            <StatisticLine name="average" num={(good-bad)/(good+bad+neutral)}/>
+            <StatisticLine name="positive" num={(good)/(bad+good+neutral)*100}/>
+          </tbody>
+        </table>
         </>
       )
    }
 }
 
-const Statistics = ({name, num}) => {
+const StatisticLine = ({name, num}) => {
     return (
-      <p>{name} {num}</p>
+      <tr>
+        <td>{name}</td>
+        <td>{num}</td>
+      </tr>
     )
 }
 
@@ -74,7 +81,7 @@ const App = () => {
       <Button onClick={badReview} text="bad"/>
 
       <h1>statistics</h1>
-      <StatisticsContainer good={good} bad={bad} neutral={neutral} />
+      <Statistics good={good} bad={bad} neutral={neutral} />
     </>
   )
 }
