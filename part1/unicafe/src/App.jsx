@@ -1,9 +1,30 @@
+import React from 'react'
 import { useState } from 'react'
 
-const Statistics = (props) => {
-  return (
-    <p>{props.name} {props.num}</p>
-  )
+const StatisticsContainer = ({good, neutral, bad}) => {
+    if( good+bad+neutral === 0){
+      return (
+        <p>No feedback given</p>
+      )
+    }
+    else {
+      return (
+        <>
+          <Statistics name="good" num={good} />
+          <Statistics name="neutral" num={neutral}/>
+          <Statistics name="bad" num={bad} />
+          <Statistics name="total" num={good + bad + neutral} />
+          <Statistics name="average" num={(good-bad)/(good+bad+neutral)}/>
+          <Statistics name="positive" num={(good)/(bad+good+neutral)*100}/>
+        </>
+      )
+   }
+}
+
+const Statistics = ({name, num}) => {
+    return (
+      <p>{name} {num}</p>
+    )
 }
 
 const Button = ({onClick, text}) => {
@@ -22,9 +43,7 @@ const App = () => {
   const [goodPercent, setGoodPercent] = useState(0)
 
   const calculateAverage = () => {
-    console.log("total: ", total)
     const newAverage = (good - bad)/total
-    console.log("total after: ", total)
     setAverage(newAverage)
   }
 
@@ -46,7 +65,6 @@ const App = () => {
     calculateAverage()
     setGoodPercent(good/total * 100)
   }
-  
 
   return (
     <>
@@ -56,12 +74,7 @@ const App = () => {
       <Button onClick={badReview} text="bad"/>
 
       <h1>statistics</h1>
-      <Statistics name="good" num={good} />
-      <Statistics name="neutral" num={neutral}/>
-      <Statistics name="bad" num={bad} />
-      <Statistics name="total" num={good + bad + neutral} />
-      <Statistics name="average" num={(good-bad)/(good+bad+neutral)}/>
-      <Statistics name="positive" num={(good)/(bad+good+neutral)*100}/>
+      <StatisticsContainer good={good} bad={bad} neutral={neutral} />
     </>
   )
 }
