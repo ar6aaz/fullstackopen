@@ -23,8 +23,8 @@ const App = () => {
   }
 
   const findHighestVotedAnecdote = () => {
-    const maxValue = Math.max(...votes);
-    const maxIndex = votes.indexOf(maxValue);
+    const maxValue = Math.max(...votes)
+    const maxIndex = votes.indexOf(maxValue)
     setHighestVoted(maxIndex)
   }
 
@@ -43,7 +43,14 @@ const App = () => {
       <button onClick={incrementVote}>vote</button>
 
       <h1>Anecdote with most votes</h1>
-      {anecdotes[highestVoted]}
+      {Math.max(...votes) === 0 ? (
+        <p>
+          Be the first to vote and make your favourite anecdote today's most
+          voted for.
+        </p>
+      ) : (
+        anecdotes[votes.indexOf(Math.max(...votes))]
+      )}
     </div>
   )
 }
