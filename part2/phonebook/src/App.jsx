@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import phonebookService from './services/persons'
 
 const Filter = ({onChange}) => {
   return(
@@ -32,21 +32,21 @@ const App = () => {
   const [personsToShow, setPersonsToShow] = useState(persons);
 
   useEffect(() => {
-    axios
-      .get('https://ubiquitous-orbit-pjwgvq66q62rwvx.app.github.dev:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-        setPersonsToShow(response.data);
+    phonebookService
+      .getAll()
+      .then(contacts => {
+        setPersons(contacts)
+        setPersonsToShow(contacts);
       })
   }, [])
 
 
-  const Persons = ({personsToShow}) => {
+  const Persons = ({person, deletePerson}) => {
     return(
       <>
-        {personsToShow.map(person => 
-        <p key={person.name}>{person.name} {person.number}</p>
-      )}
+          {person.name} {person.number}
+          <button onClick={() => deletePerson(person.id)}>delete</button>
+          <br />
       </>
     )
   }
@@ -66,11 +66,11 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
     else{
-      axios
-        .post('https://ubiquitous-orbit-pjwgvq66q62rwvx.app.github.dev:3001/persons', newPerson)
-        .then(response => {
-          setPersons(persons.concat(response.data))
-          setPersonsToShow(persons);
+      phonebookService
+        .create(newPerson)
+        .then(contact => {
+          setPersons(persons.concat(contact))
+          setPersonsToShow(persons.concat(contact))
       })
     }
     setNewName('');
@@ -84,14 +84,41 @@ const App = () => {
     setNewPhone(event.target.value)
   }
 
+
+  const deletePerson = (id) => {
+      const personToDelete = persons.find( person => person.id === id )
+      const changedPerson = {...personToDelete}
+      console.log(changedPerson)
+      if(confirm(`Delete ${personToDelete.name} ?`)) {
+        phonebookService
+          .deletePerson(id)
+          .then(changedNoteResponse => {
+          setPersons(persons.filter(person => person.id !== id))
+          setPersonsToShow(persons)
+        })
+      }
+  }
+
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter onChange={handleFilter}/>
+
       <h2>Add a new</h2>
-      <PersonForm onClick={addNewName} onNameChange={handleNameChange} onPhoneChange={handlePhoneChange}/>
+      <PersonForm 
+        onClick={addNewName} 
+        onNameChange={handleNameChange} 
+        onPhoneChange={handlePhoneChange}
+      />
+
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow}/>
+      {personsToShow.map(person =>
+        <Persons 
+          person={person}
+          deletePerson={() => deletePerson(person.id)}
+        />
+      )}
     </div>
   )
 }
