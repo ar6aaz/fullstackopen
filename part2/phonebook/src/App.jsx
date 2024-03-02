@@ -63,7 +63,15 @@ const App = () => {
       number: newPhone
     }
     if(persons.some(element => element.name === newName)){
-      alert(`${newName} is already added to phonebook`)
+      if(confirm(`${newName} is already added to phonebook, replace the old number with new one?`)){
+        const element = persons.filter(element => element.name === newName)
+          phonebookService
+            .put(newPerson, element[0].id)
+            .then(contact => {
+              setPersons(persons.concat(contact))
+              setPersonsToShow(persons.concat(contact))
+        })
+      }
     }
     else{
       phonebookService
@@ -72,9 +80,9 @@ const App = () => {
           setPersons(persons.concat(contact))
           setPersonsToShow(persons.concat(contact))
       })
-    }
     setNewName('');
     setNewPhone('');
+  }
   }
 
   const handleNameChange = (event) => {
@@ -121,6 +129,6 @@ const App = () => {
       )}
     </div>
   )
-}
 
+}
 export default App
