@@ -66,11 +66,15 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
     else{
-      setPersons(persons.concat(newPerson))
-      setPersonsToShow(persons);
+      axios
+        .post('https://ubiquitous-orbit-pjwgvq66q62rwvx.app.github.dev:3001/persons', newPerson)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setPersonsToShow(persons);
+      })
     }
     setNewName('');
-    
+    setNewPhone('');
   }
 
   const handleNameChange = (event) => {
