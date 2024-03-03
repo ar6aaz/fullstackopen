@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import phonebookService from './services/persons'
+import Notification from './components/Notification'
 
 const Filter = ({onChange}) => {
   return(
@@ -30,6 +31,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [personsToShow, setPersonsToShow] = useState(persons);
+  const [message, setMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     phonebookService
@@ -70,7 +73,20 @@ const App = () => {
             .then(contact => {
               setPersons(persons.concat(contact))
               setPersonsToShow(persons.concat(contact))
-        })
+              setMessage(`Phone number of existing contact ${element[0].name} updated`)
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)})
+              .catch( error => {
+                console.log('setting error msg')
+                setErrorMessage(`${newName} was already deleted from phonebook`)
+                setTimeout(() => {
+                  setErrorMessage(null)
+                }, 5000)
+                setPersons(persons.filter(p => p.id !== id))
+              }
+
+              )
       }
     }
     else{
@@ -82,6 +98,10 @@ const App = () => {
       })
     setNewName('');
     setNewPhone('');
+    setMessage(`Added new contact ${newPerson.name}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
   }
 
@@ -102,7 +122,7 @@ const App = () => {
           .deletePerson(id)
           .then(changedNoteResponse => {
           setPersons(persons.filter(person => person.id !== id))
-          setPersonsToShow(persons)
+          setPersonsToShow(persons.filter(person => person.id !== id))
         })
       }
   }
@@ -111,6 +131,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} errorMessage={errorMessage}/>
       <Filter onChange={handleFilter}/>
 
       <h2>Add a new</h2>
@@ -123,6 +144,7 @@ const App = () => {
       <h2>Numbers</h2>
       {personsToShow.map(person =>
         <Persons 
+          key={person.id}
           person={person}
           deletePerson={() => deletePerson(person.id)}
         />
