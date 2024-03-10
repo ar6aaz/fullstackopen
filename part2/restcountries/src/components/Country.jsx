@@ -22,10 +22,39 @@ const SingleCountry = ({filteredCountries}) => {
   )
 }
 
+const MultipleCountries = ({filteredCountries}) => {
+  const [renderSingleCountry, setRenderSingleCountry] = useState(false);
+  const [singleCountry, setSingleCountry] = useState(null);
+  
+  const handleClick = (event) => {
+    const country = filteredCountries.filter(country => country.name.common.toLowerCase().includes(event.target.value.toLowerCase()))
+    if(country!=null){
+      setSingleCountry(country)
+      setRenderSingleCountry(true)
+    }
+  }
+
+  return (
+    <>
+      {
+        renderSingleCountry === false ? (
+          filteredCountries
+           .map(country => (
+             <div key={country.id}>
+               {country.name.common}&nbsp;
+               <button value={country.name.common} onClick={handleClick}>show</button>
+             </div>
+      )))
+        :
+        <SingleCountry filteredCountries={singleCountry} />
+      }
+    </>
+  )
+}
+
 const ShowAllCountries = ({countries}) => {
   return (
     <>
-    {console.log('showing all')}
       {countries != null ? (
         countries
           .filter(country => country.name != null)
@@ -42,7 +71,6 @@ const ShowAllCountries = ({countries}) => {
 }
 
 const ShowFilteredCountries = ({countries, countryName}) => {
-
   const filteredCountries = countries != null
         ? countries
             .filter(country => country.name.common.toLowerCase().includes(countryName.toLowerCase()))
@@ -55,14 +83,7 @@ const ShowFilteredCountries = ({countries, countryName}) => {
         ||
         (filteredCountries.length === 1 && <SingleCountry filteredCountries={filteredCountries} />)
         ||
-        (
-         filteredCountries
-           .map(country => (
-             <div key={country.id}>
-               {country.name.common}
-             </div>
-           ))
-        )
+        (filteredCountries.length < 10 && <MultipleCountries filteredCountries={filteredCountries} /> )
       }
     </>
   );
