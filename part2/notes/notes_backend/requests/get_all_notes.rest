@@ -1,0 +1,1 @@
+GET https://reimagined-space-parakeet-v99jxjvqx9g2694w.app.github.dev:3001/api/notes
