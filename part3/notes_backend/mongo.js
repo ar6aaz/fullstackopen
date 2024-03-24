@@ -8,7 +8,7 @@ if (process.argv.length<3) {
 const password = process.argv[2]
 
 const url =
-   `mongodb+srv://ar6aaz:${password}@cluster0.k8inx3i.mongodb.net/noteApp?retryWrites=true&w=majority`
+   `mongodb+srv://ar6aaz:${password}@cluster0.wbgwref.mongodb.net/?retryWrites=true&w=majority`
 
 mongoose.set('strictQuery',false)
 
@@ -26,14 +26,14 @@ const note = new Note({
   important: true,
 })
 
-/*
-1. Add new note
+
+// 1. Add new note
 
 note.save().then(result => {
   console.log('note saved!')
   mongoose.connection.close()
 })
-
+/*
 2. Get all notes
 
 Note.find({}).then(result => {
