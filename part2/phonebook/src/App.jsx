@@ -95,6 +95,11 @@ const App = () => {
         .then(contact => {
           setPersons(persons.concat(contact))
           setPersonsToShow(persons.concat(contact))
+      }).catch(error => {
+        setErrorMessage(error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       })
     setNewName('');
     setNewPhone('');
