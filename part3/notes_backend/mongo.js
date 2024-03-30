@@ -52,8 +52,8 @@ Note.find({important: true}).then(result => {
     })
     mongoose.connection.close()
   })*/
-  
-  /*
+
+/*
   How to run:
 > node mongo.js YOUR_MONGO_PASSWORD
 
