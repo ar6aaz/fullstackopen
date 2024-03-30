@@ -1,11 +1,19 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+// var requestLogger = require('morgan')
 const Note = require('./models/note')
 const app = express()
 
 app.use(express.static('dist'))
 app.use(express.json())
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
 app.use(cors())
 app.use(requestLogger)
 
@@ -31,19 +39,29 @@ app.use(requestLogger)
     .catch(error => next(error))
   })
 
-  app.delete('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id)
-    notes = notes.filter(note => note.id !== id)
-    response.status(204).end()
+  app.delete('/api/notes/:id', (request, response, next) => {
+    Note.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
   })
 
-  const generateId = () => {
-    const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => n.id)) 
-    : 0
+  app.put('/api/notes/:id', (request, response, next) => {
+    const body = request.body
+  
+    const note = {
+      content: body.content,
+      important: body.important,
+    }
+  
+    Note.findByIdAndUpdate(request.params.id, note, { new: true })
+      .then(updatedNote => {
+        response.json(updatedNote)
+      })
+      .catch(error => next(error))
+  })
 
-    return maxId + 1
-  }
   app.post('/api/notes', (request, response) => {
     const body = request.body
 
@@ -65,7 +83,6 @@ app.use(requestLogger)
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 } 
-  // handler of requests with unknown endpoint
 app.use(unknownEndpoint)
   
 const errorHandler = (error, request, response, next) => {
