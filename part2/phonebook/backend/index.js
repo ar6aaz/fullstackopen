@@ -9,8 +9,8 @@ app.use(cors())
 app.use(express.static('dist'))
 
 // app.use(morgan('tiny'))
-morgan.token('body', (req, res) => JSON.stringify(req.body));
-app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body - :req[content-length]'));
+morgan.token('body', (req, res) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body - :req[content-length]'))
 
 app.use(express.json())
 
@@ -21,28 +21,28 @@ app.get('/', (request, response) => {
 app.get('/api/persons',(request, response) => {
   Phonebook.find({}).then(persons => {
     response.json(persons)
-})
+  })
 })
 
 app.get('/api/persons/:id',(request, response, next) => {
   Phonebook.findById(request.params.id)
     .then(person => {
       if (person) {
-        response.json(person);
+        response.json(person)
       }
       else {
-        response.status(404).end();
+        response.status(404).end()
       }
     })
-  .catch(error => next(error));
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Phonebook.findByIdAndDelete(request.params.id)
     .then(person => {
-      response.status(204).end();
+      response.status(204).end()
     })
-    .catch(error => next(error));
+    .catch(error => next(error))
 })
 
 app.get('/info', async (request, response) => {
@@ -64,14 +64,14 @@ app.post('/api/persons', (request, response, next) => {
   phonebook.save().then(savedPhonebook => {
     response.json(savedPhonebook)
   })
-    .catch(error => next(error));
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   Phonebook.findByIdAndUpdate(request.params.id,
-    {name, number},
+    { name, number },
     { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
       response.json(updatedPerson)
@@ -81,7 +81,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
-} 
+}
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
