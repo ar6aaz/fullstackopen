@@ -91,6 +91,44 @@ test('url is a required property', async () => {
     .expect(400)
 })
 
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogsToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogsToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const contents = blogsAtEnd.map(r => r.title)
+  assert(!contents.includes(blogsToDelete.title))
+
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+})
+
+test('a blog can be updated', async () => {
+  const updatedBlog = {
+    title: "Test blog 1",
+    author: "Arbaaz",
+    url: "https://a6z.co",
+    likes: 7
+  }
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const blogUpdated = blogsAtEnd[0]
+  assert(blogUpdated.likes == 7)
+  assert(blogsAtStart.length == blogsAtEnd.length)
+})
+
+
 after(async () => {
   await mongoose.connection.close()
 })
