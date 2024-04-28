@@ -54,4 +54,34 @@ describe('when there is initially one user in db', () => {
 
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
+
+  test('creation fails with proper statuscode and message if username is less than 3 chars', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ro',
+      name: 'Supe',
+      password: 'sa',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('username is a required property', async () => {
+    const newUser = {
+      name: 'Superman12345',
+      password: 'sa12345667',
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+  })
+  
 })
